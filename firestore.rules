@@ -1,0 +1,33 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // PR Jobs collection: Accessible for public/team request and PR tracking
+    match /pr_jobs/{jobId} {
+      allow read: if true;
+      allow create: if isValidId(jobId) && 
+        request.resource.data.title is string && 
+        request.resource.data.title.size() <= 300 &&
+        request.resource.data.category in ['poster', 'photography', 'facebook_pr', 'mc_event', 'print_media', 'other'] &&
+        request.resource.data.status in ['pending', 'in_progress', 'review', 'delivered', 'completed'];
+      allow update: if isValidId(jobId) &&
+        request.resource.data.status in ['pending', 'in_progress', 'review', 'delivered', 'completed'];
+      allow delete: if isSignedIn();
+    }
+  }
+}

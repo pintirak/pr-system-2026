@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "PRJob": {
+      "title": "PR Job Request",
+      "description": "A public relations service request document",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the job"
+        },
+        "jobCode": {
+          "type": "string",
+          "description": "Formatted job code e.g. PR-2026-0901",
+          "pattern": "^PR-[0-9]{4}-[0-9]{3,4}$"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the PR job",
+          "maxLength": 300
+        },
+        "category": {
+          "type": "string",
+          "enum": ["poster", "photography", "facebook_pr", "mc_event", "print_media", "other"]
+        },
+        "department": {
+          "type": "string",
+          "description": "Requester department"
+        },
+        "requesterName": {
+          "type": "string",
+          "description": "Name of requesting staff/person"
+        },
+        "requesterContact": {
+          "type": "string",
+          "description": "Contact info (phone/line)"
+        },
+        "requestDate": {
+          "type": "string",
+          "description": "ISO Date YYYY-MM-DD"
+        },
+        "deadlineDate": {
+          "type": "string",
+          "description": "Target delivery date"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["normal", "urgent", "urgent_critical"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "in_progress", "review", "delivered", "completed"]
+        },
+        "description": {
+          "type": "string",
+          "description": "Details of the service needed"
+        },
+        "progressPercentage": {
+          "type": "number",
+          "description": "Progress from 0 to 100"
+        }
+      },
+      "required": ["id", "jobCode", "title", "category", "department", "requesterName", "requestDate", "deadlineDate", "priority", "status"]
+    }
+  },
+  "firestore": {
+    "/pr_jobs/{jobId}": {
+      "schema": {
+        "$ref": "#/entities/PRJob"
+      },
+      "description": "Collection of all PR service requests and operational tracking"
+    }
+  }
+}
